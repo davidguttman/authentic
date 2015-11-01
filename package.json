@@ -1,0 +1,23 @@
+{
+  "name": "authentic",
+  "version": "0.0.0",
+  "description": "Authentication for microservices.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
+  "license": "MIT",
+  "directories": {
+    "example": "example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidguttman/authentic.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidguttman/authentic/issues"
+  },
+  "homepage": "https://github.com/davidguttman/authentic#readme"
+}
