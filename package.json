@@ -4,7 +4,7 @@
   "description": "Authentication for microservices.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard"
   },
   "keywords": [],
   "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/davidguttman/authentic/issues"
   },
-  "homepage": "https://github.com/davidguttman/authentic#readme"
+  "homepage": "https://github.com/davidguttman/authentic#readme",
+  "devDependencies": {
+    "standard": "^5.3.1"
+  }
 }
