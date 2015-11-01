@@ -1,45 +1,17 @@
 # Authentic
 
-Authentication for microservices.
+Authentication for microservices. This is collection of the following modules:
 
-## Example ##
-
-```js
-var http = require('http')
-var level = require('level')
-var Authentic = require('authentic')
-
-var auth = Authentic({
-  publicKey: publicKey,
-  privateKey: privateKey,
-  db: level('./userdb'),
-  email: sendEmail
-})
-
-var server = http.createServer(function (req, res) {
-  if (req.url === '/auth/signup') return auth.signup(req, res, onError)
-  if (req.url === '/auth/confirm') return auth.confirm(req, res, onError)
-  if (req.url === '/auth/login') return auth.login(req, res, onError)
-  if (req.url === '/auth/change-password-request') return auth.changePasswordRequest(req, res, onError)
-  if (req.url === '/auth/change-password') return auth.changePassword(req, res, onError)
-  if (req.url === '/auth/public-key') return auth.publicKey(req, res, onError)
-
-  function onError (err) {
-    if (err) {
-      res.statusCode = err.statusCode || 500
-      res.end(JSON.stringify({ success: false, error: err.message }))
-      console.error(err)
-    }
-  }
-})
-```
+* `authentic-server`
+* `authentic-service`
+* `authentic-client`
 
 ## What is it? ##
 
 Authentic is a collection of modules to help your various services authenticate a user. Put more concretely, Authentic aims to do the following:
 
 * Allow your users to "sign up", "confirm", "login", and "change password" with their email address and a chosen password
-* Provide your distributed services and APIs with a token that verifies the users identity (their email address)
+* Provide your distributed services and APIs with a token that verifies the user's identity (their email address)
 
 ## How it works ##
 
@@ -55,6 +27,100 @@ Let's pretend you work at ScaleHaus (Uber meets Airbnb for lizards) and you have
 
 5) Your microservice, `reports.scalehaus.io`, will be able to use `auth.scalehaus.io`'s public key to decrypt the token and verify that the user is actually chet@scalehaus.io -- without needing a shared db
 
+
+## Example ##
+
+Authentic Server
+
+```js
+var fs = require('fs')
+var http = require('http')
+var Authentic = require('../')
+
+var auth = Authentic({
+  db: __dirname + '/../db/',
+  publicKey: fs.readFileSync(__dirname + '/rsa-public.pem'),
+  privateKey: fs.readFileSync(__dirname + '/rsa-private.pem'),
+  sendEmail: function (email, cb) {
+    console.log(email)
+    setImmediate(cb)
+  }
+})
+
+var server = http.createServer(function (req, res) {
+  auth(req, res, next)
+
+  function next (req, res) {
+    // not an authentic route, send 404 or send to another route
+    res.end('Not an authentic route =)')
+  }
+})
+
+server.listen(1337)
+console.log('Authentic enabled server listening on port', 1337)
+```
+
+Client Login
+```js
+var jsonist = require('jsonist')
+
+var loginUrl = 'https://auth.scalehaus.io/auth/login'
+
+var userData = {
+  email: 'chet@scalehaus.io',
+  password: 'definitelynotswordfish'
+}
+
+// Step 1: get token
+jsonist.post(loginUrl, userData, function (err, resp) {
+  if (err || resp.error) return console.error(err || resp.error)
+
+  var token = resp.authToken
+
+  // Step 2: use token!
+  var microserviceUrl = 'https://reports.scalehaus.io/private'
+  var opts = {headers: {authorization: 'Bearer ' + token}}
+
+  jsonist.get(microserviceUrl, opts, function (err, report) {
+    if (err) return console.error(err)
+
+    // Show dat report!
+  })
+})
+
+```
+
+Microservice
+```js
+
+var http = require('http')
+var Authentic = require('../').service
+
+var auth = Authentic({
+  server: 'https://auth.scalehaus.io'
+})
+
+http.createServer(function (req, res) {
+  // Step 1: decrypt the token
+  auth(req, res, function (err, authData) {
+    if (err) return console.error(err)
+
+    // Step 2: if we get an email and it's one we like, let them in!
+    if (authData && authData.email.match(/@scalehaus\.io$/)) {
+      res.writeHead(200)
+      res.end('You\'re in!')
+
+    // otherwise, keep them out!
+    } else {
+      res.writeHead(403)
+      res.end('Nope.')
+    }
+  })
+}).listen(1338)
+
+console.log('Protected microservice listening on port', 1338)
+
+```
 
 # License
 
