@@ -2,9 +2,9 @@
 
 Authentication for microservices. This is collection of the following modules:
 
-* `authentic-server`
-* `authentic-service`
-* `authentic-client`
+* [authentic-server](https://github.com/davidguttman/authentic-server)
+* [authentic-service](https://github.com/davidguttman/authentic-service)
+* [authentic-client](https://github.com/davidguttman/authentic-client)
 
 ## What is it? ##
 
