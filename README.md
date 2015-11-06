@@ -35,7 +35,7 @@ Authentic Server
 ```js
 var fs = require('fs')
 var http = require('http')
-var Authentic = require('../')
+var Authentic = require('authentic').server
 
 var auth = Authentic({
   db: __dirname + '/../db/',
@@ -60,41 +60,11 @@ server.listen(1337)
 console.log('Authentic enabled server listening on port', 1337)
 ```
 
-Client Login
-```js
-var jsonist = require('jsonist')
-
-var loginUrl = 'https://auth.scalehaus.io/auth/login'
-
-var userData = {
-  email: 'chet@scalehaus.io',
-  password: 'definitelynotswordfish'
-}
-
-// Step 1: get token
-jsonist.post(loginUrl, userData, function (err, resp) {
-  if (err || resp.error) return console.error(err || resp.error)
-
-  var token = resp.authToken
-
-  // Step 2: use token!
-  var microserviceUrl = 'https://reports.scalehaus.io/private'
-  var opts = {headers: {authorization: 'Bearer ' + token}}
-
-  jsonist.get(microserviceUrl, opts, function (err, report) {
-    if (err) return console.error(err)
-
-    // Show dat report!
-  })
-})
-
-```
-
 Microservice
 ```js
 
 var http = require('http')
-var Authentic = require('../').service
+var Authentic = require('authentic').service
 
 var auth = Authentic({
   server: 'https://auth.scalehaus.io'
@@ -119,6 +89,35 @@ http.createServer(function (req, res) {
 }).listen(1338)
 
 console.log('Protected microservice listening on port', 1338)
+
+```
+
+Client Login
+```js
+var Authentic = require('../').client
+
+var auth = Authentic({
+  server: 'https://auth.scalehaus.io'
+})
+
+var creds = {
+  email: 'chet@scalehaus.io',
+  password: 'notswordfish'
+}
+
+// Step 1: log in
+auth.login(creds, function (err) {
+  if (err) return console.error(err)
+
+  // Step 2: make a JSON request with authentication
+  var url = 'https://reporting.scalehaus.io/report'
+  auth.get(url, function (err, data) {
+    if (err) return console.error(err)
+
+    // show that report
+    console.log(data)
+  })
+})
 
 ```
 

@@ -1,25 +1,24 @@
-var jsonist = require('jsonist')
+var Authentic = require('../').client
 
-var loginUrl = 'https://auth.scalehaus.io/auth/login'
+var auth = Authentic({
+  server: 'https://auth.scalehaus.io'
+})
 
-var userData = {
+var creds = {
   email: 'chet@scalehaus.io',
-  password: 'definitelynotswordfish'
+  password: 'notswordfish'
 }
 
-// Step 1: get token
-jsonist.post(loginUrl, userData, function (err, resp) {
-  if (err || resp.error) return console.error(err || resp.error)
+// Step 1: log in
+auth.login(creds, function (err) {
+  if (err) return console.error(err)
 
-  var token = resp.authToken
-
-  // Step 2: use token!
-  var microserviceUrl = 'https://reports.scalehaus.io/private'
-  var opts = {headers: {authorization: 'Bearer ' + token}}
-
-  jsonist.get(microserviceUrl, opts, function (err, report) {
+  // Step 2: make a JSON request with authentication
+  var url = 'https://reporting.scalehaus.io/report'
+  auth.get(url, function (err, data) {
     if (err) return console.error(err)
 
-    // Show dat report!
+    // show that report
+    console.log(data)
   })
 })
