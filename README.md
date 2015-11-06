@@ -10,8 +10,9 @@ Authentication for microservices. This is collection of the following modules:
 
 Authentic is a collection of modules to help your various services authenticate a user. Put more concretely, Authentic aims to do the following:
 
-* Allow your users to "sign up", "confirm", "login", and "change password" with their email address and a chosen password
-* Provide your distributed services and APIs with a token that verifies the user's identity (their email address)
+* `authentic-server` will allow your users to "sign up", "confirm", "login", and "change password" with their email address and a chosen password. It will also provide its public-key to other microservices so that they can decrypt authentication tokens and verify a user's identity.
+* `authentic-service` will request (and cache) your `authentic-server`'s public-key, and can use it to decrypt the authentication token in client requests to your microservice
+* `authentic-client` is an easy way to consume `authentic-server`'s endpoints. It will also help make requests to protected microservices by putting the authentication token in the header for you.
 
 ## How it works ##
 
