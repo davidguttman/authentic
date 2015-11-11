@@ -8,28 +8,24 @@ Authentication for microservices. This is collection of the following modules:
 
 ## What is it? ##
 
-Authentic is a collection of modules to help your various services authenticate a user. Put more concretely, Authentic aims to do the following:
+Authentic is a collection of modules to help your various services authenticate a user. Put more concretely, Authentic does the following:
 
-* `authentic-server` will allow your users to "sign up", "confirm", "login", and "change password" with their email address and a chosen password. It will also provide its public-key to other microservices so that they can decrypt authentication tokens and verify a user's identity.
-* `authentic-service` will request (and cache) your `authentic-server`'s public-key, and can use it to decrypt the authentication token in client requests to your microservice
-* `authentic-client` is an easy way to consume `authentic-server`'s endpoints. It will also help make requests to protected microservices by putting the authentication token in the header for you.
-
-## How it works ##
-
-Let's pretend you work at ScaleHaus (Uber meets Airbnb for lizards) and you have a single page app (SPA) at `admin.scalehaus.io` that would like to talk to various internal microservices (reporting, account admin, etc...). You could ensure that only those with a `@scalehaus.io` email address have access to your SPA and services by doing the following:
-
-1) Run an instance of Authentic (see above) at `auth.scalehaus.io`
-
-2) Add views to `admin.scalehaus.io` for signup/login/etc, and hook them up to the appropriate CORS endpoints on `auth.scalehaus.io`
-
-3) When a user (chet@scalehaus.io) logs in, your SPA will receive a JSON Web Token (JWT) for that user (feel free to store in localStorage for later)
-
-4) Now, any time your user interacts with a microservice (i.e. `reporting.scalehaus.io`) your SPA will add the JWT to the request header
-
-5) Your microservice, `reports.scalehaus.io`, will be able to use `auth.scalehaus.io`'s public key to decrypt the token and verify that the user is actually chet@scalehaus.io -- without needing a shared db
-
+* Allow your users to "sign up", "confirm", "log in", and "change password" with their email address and a chosen password (persisted to a db of your choice), and provide an authentication token on successful log in.
+* Easily protect access to your microservice by decrypting a user's authentication token.
+* Help make requests from the browser to `authentic-server` for sign up/confirm/login/password reset, as well as automatically including the authentication token in requests to your microservices.
 
 ## Example ##
+
+Let's pretend you work at ScaleHaus (Uber meets Airbnb for lizards). You have a web app at `admin.scalehaus.io` (client-side SPA) that is an interface to various microservices (like `reporting.scalehaus.io`). You want to make sure that only employees with a `@scalehaus.io` email address have access to your app and microservices. Here's how you can do it:
+
+1) Create an authentication server with [authentic-server](https://github.com/davidguttman/authentic-server) available at `auth.scalehaus.io`.
+
+2) Add views to `admin.scalehaus.io` for signup/confirm/login/reset-password and use [authentic-client](https://github.com/davidguttman/authentic-client) for those actions and for requests to your microservices.
+
+3) In your microservice(s), e.g. `reports.scalehaus.io`, use [authentic-service](https://github.com/davidguttman/authentic-service) to decrypt the authentication token provided in the request and verify the user's identity and that their email ends in `@scalehaus.io`.
+
+
+## In Action ##
 
 Authentic Server
 
@@ -39,26 +35,16 @@ var http = require('http')
 var Authentic = require('authentic').server
 
 var auth = Authentic({
-  db: __dirname + '/../db/',
-  publicKey: fs.readFileSync(__dirname + '/rsa-public.pem'),
-  privateKey: fs.readFileSync(__dirname + '/rsa-private.pem'),
+  db: './userdb',
+  publicKey: fs.readFileSync('/rsa-public.pem'),
+  privateKey: fs.readFileSync('/rsa-private.pem'),
   sendEmail: function (email, cb) {
-    console.log(email)
-    setImmediate(cb)
+    // send the email however you'd like and call cb()
   }
 })
 
-var server = http.createServer(function (req, res) {
-  auth(req, res, next)
-
-  function next (req, res) {
-    // not an authentic route, send 404 or send to another route
-    res.end('Not an authentic route =)')
-  }
-})
-
-server.listen(1337)
-console.log('Authentic enabled server listening on port', 1337)
+http.createServer(auth).listen(1337)
+console.log('Authentic Server listening on port', 1337)
 ```
 
 Microservice
@@ -95,7 +81,7 @@ console.log('Protected microservice listening on port', 1338)
 
 Client Login
 ```js
-var Authentic = require('../').client
+var Authentic = require('authentic').client
 
 var auth = Authentic({
   server: 'https://auth.scalehaus.io'
