@@ -10,7 +10,7 @@ Authentication for microservices. This is collection of the following modules:
 
 Authentic is a collection of modules to help your various services authenticate a user. Put more concretely, Authentic does the following:
 
-* Allow your users to "sign up", "confirm", "log in", and "change password" with their email address and a chosen password (persisted to a db of your choice), and provide an authentication token on successful log in.
+* Allow your users to "sign up", "confirm", "log in", and "change password" with their email address and a chosen password (persisted to a db of your choice), and provide an authentication token ([JWT](http://jwt.io)) on successful log in.
 * Easily protect access to your microservice by decrypting a user's authentication token.
 * Help make requests from the browser to `authentic-server` for sign up/confirm/login/password reset, as well as automatically including the authentication token in requests to your microservices.
 
