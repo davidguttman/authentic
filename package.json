@@ -1,6 +1,6 @@
 {
   "name": "authentic",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Authentication for microservices.",
   "main": "index.js",
   "scripts": {
