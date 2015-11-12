@@ -24,6 +24,9 @@ Let's pretend you work at ScaleHaus (Uber meets Airbnb for lizards). You have a 
 
 3) In your microservice(s), e.g. `reports.scalehaus.io`, use [authentic-service](https://github.com/davidguttman/authentic-service) to decrypt the authentication token provided in the request and verify the user's identity and that their email ends in `@scalehaus.io`.
 
+## Installation ##
+
+It's best to install each module individually in the project that needs it. In theory, you could have a single project that needs to be the server, client, and service -- in that case feel free to `npm install --save authentic`. Otherwise use `npm install --save authentic-server`, `npm install --save authentic-service`, or `npm install --save authentic-client` depending on your project.
 
 ## In Action ##
 
