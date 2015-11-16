@@ -14,6 +14,8 @@ Authentic is a collection of modules to help your various services authenticate 
 * Easily protect access to your microservice by decrypting a user's authentication token.
 * Help make requests from the browser to `authentic-server` for sign up/confirm/login/password reset, as well as automatically including the authentication token in requests to your microservices.
 
+There's also a more full [introduction to Authentic](http://dry.ly/authentic).
+
 ## Example ##
 
 Let's pretend you work at ScaleHaus (Uber meets Airbnb for lizards). You have a web app at `admin.scalehaus.io` (client-side SPA) that is an interface to various microservices (like `reporting.scalehaus.io`). You want to make sure that only employees with a `@scalehaus.io` email address have access to your app and microservices. Here's how you can do it:
