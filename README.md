@@ -32,7 +32,7 @@ It's best to install each module individually in the project that needs it. In t
 
 ## In Action ##
 
-Authentic Server
+### Authentic Server ###
 
 ```js
 var fs = require('fs')
@@ -52,7 +52,10 @@ http.createServer(auth).listen(1337)
 console.log('Authentic Server listening on port', 1337)
 ```
 
-Microservice
+### Microservice ###
+
+Authentic provides a token decrypt function for easy use, but since everything is standard JWT, feel free to use your own (`authentic-server` exposes its public-key by default at `/auth/public-key`).
+
 ```js
 
 var http = require('http')
@@ -84,7 +87,10 @@ console.log('Protected microservice listening on port', 1338)
 
 ```
 
-Client Login
+### Client Login ###
+
+Authentic provides a HTTP JSON client for easy use, but since everything is standard JWT, feel free to use your own.
+
 ```js
 var Authentic = require('authentic').client
 
